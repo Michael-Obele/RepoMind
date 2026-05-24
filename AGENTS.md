@@ -14,7 +14,7 @@
 - **Auth**: Better Auth with username/password plus optional GitHub OAuth.
 - **GitHub integration**: `@octokit/app`, `@octokit/rest`, `@octokit/graphql`, `@octokit/webhooks`.
 - **Email**: Resend for stale issue digests and streak reminders.
-- **AI**: Gemini primary, OpenAI fallback when needed.
+- **AI**: Provider selected from configured DeepSeek, OpenAI, or Gemini keys, with optional `AI_PROVIDER` override.
 - **Icons**: Use `@lucide/svelte` only. Never use `lucide-svelte`.
 - **UI**: shadcn-svelte primitives and Bits UI.
 
