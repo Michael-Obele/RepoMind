@@ -19,7 +19,7 @@
 		<div class="flex flex-wrap gap-3">
 			<Button href="/privacy" variant="ghost">Privacy</Button>
 			<Button href="/terms" variant="ghost">Terms</Button>
-			<Button href="https://github.com/apps/repomind/installations/new" variant="outline">
+			<Button href="https://github.com/apps/repo-mind/installations/new" variant="outline">
 				Install app
 				<ExternalLink class="size-4" />
 			</Button>

@@ -56,7 +56,7 @@
 					PR summaries, triage, reminders
 				</span>
 			</div>
-			<Button href="https://github.com/apps/repomind/installations/new" variant="outline"
+			<Button href="https://github.com/apps/repo-mind/installations/new" variant="outline"
 				>Install app</Button
 			>
 			<Button href={authHref}>{authLabel}<ArrowRight class="size-4" /></Button>
@@ -110,7 +110,7 @@
 							>{authLabel}<ArrowRight class="size-4" /></Button
 						>
 						<Button
-							href="https://github.com/apps/repomind/installations/new"
+							href="https://github.com/apps/repo-mind/installations/new"
 							variant="outline"
 							class="w-full justify-between">Install on GitHub<BookOpen class="size-4" /></Button
 						>

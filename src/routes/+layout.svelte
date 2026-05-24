@@ -26,7 +26,7 @@
 {#if showPublicChrome}
 	<div class="flex min-h-screen flex-col bg-background">
 		<SiteNavbar currentPath={page.url.pathname} />
-		<main class="flex-1">{@render children()}</main>
+		<main class="min-h-screen flex-1">{@render children()}</main>
 		<SiteFooter aiStatusText={data.aiProvider.statusText} />
 	</div>
 {:else}

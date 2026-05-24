@@ -31,7 +31,8 @@
 				summaries, triage, and reminders from one surface.
 			</p>
 			<div class="mt-6 flex flex-wrap gap-3">
-				<Button href="https://github.com/apps/repomind/installations/new">Install on GitHub</Button>
+				<Button href="https://github.com/apps/repo-mind/installations/new">Install on GitHub</Button
+				>
 				<Button href="/account" variant="outline">Manage reminders</Button>
 			</div>
 		</div>

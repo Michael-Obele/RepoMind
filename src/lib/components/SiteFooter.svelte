@@ -56,7 +56,7 @@
 					summaries and reminders from the dashboard.
 				</p>
 				<div class="mt-5 flex flex-wrap gap-3">
-					<Button href="https://github.com/apps/repomind/installations/new"
+					<Button href="https://github.com/apps/repo-mind/installations/new"
 						>Install app<ArrowRight class="size-4" /></Button
 					>
 					<Button href="/setup" variant="outline">Read setup<BookOpen class="size-4" /></Button>

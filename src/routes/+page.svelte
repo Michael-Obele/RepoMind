@@ -52,7 +52,7 @@
 				</p>
 				<div class="mt-8 flex flex-wrap gap-3">
 					<Button href="/login">Open the dashboard</Button>
-					<Button href="https://github.com/apps/repomind/installations/new" variant="outline"
+					<Button href="https://github.com/apps/repo-mind/installations/new" variant="outline"
 						>Install on GitHub</Button
 					>
 				</div>
