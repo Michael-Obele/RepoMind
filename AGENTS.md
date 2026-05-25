@@ -42,6 +42,7 @@
 ### Styling
 
 - Preserve RepoMind’s existing visual language: dark, atmospheric, production-style surfaces with restrained gradients or radial backgrounds where the app already uses them.
+- Do not introduce gradients in new UI work.
 - Avoid generic gray boilerplate and avoid introducing random new visual themes.
 - Use Tailwind semantic tokens and the local `cn` helper for conditional classes.
 
