@@ -17,41 +17,45 @@
 	];
 </script>
 
-<footer class="border-t border-slate-200 bg-slate-950 text-white">
+<footer
+	class="border-t border-border/70 bg-card/80 text-foreground backdrop-blur-sm dark:bg-[linear-gradient(180deg,rgba(9,12,24,0.76),rgba(5,7,15,0.98))]"
+>
 	<div class="mx-auto max-w-7xl px-4 py-12 md:px-8">
 		<div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
 			<div class="space-y-5">
 				<div class="flex items-center gap-3">
-					<div class="flex size-11 items-center justify-center rounded-2xl bg-white/10 text-white">
+					<div
+						class="flex size-11 items-center justify-center rounded-2xl border border-primary/20 bg-primary/12 text-primary"
+					>
 						<Bot class="size-5" />
 					</div>
 					<div>
 						<p class="text-xs tracking-[0.26em] text-primary uppercase">RepoMind</p>
-						<p class="text-sm text-slate-400">Focused automation for GitHub maintainers</p>
+						<p class="text-sm text-muted-foreground">Focused automation for GitHub maintainers</p>
 					</div>
 				</div>
 
-				<p class="max-w-2xl text-sm leading-7 text-slate-300">
+				<p class="max-w-2xl text-sm leading-7 text-muted-foreground">
 					Summaries for new pull requests, explainable issue triage, and reminder flows that stay
 					narrow enough to audit.
 				</p>
 
-				<div class="flex flex-wrap gap-3 text-sm text-slate-300">
-					<div class="rounded-full border border-white/10 bg-white/5 px-3 py-2">
+				<div class="flex flex-wrap gap-3 text-sm text-muted-foreground">
+					<div class="rounded-full border border-border/70 bg-secondary/40 px-3 py-2">
 						Webhook signatures verified
 					</div>
-					<div class="rounded-full border border-white/10 bg-white/5 px-3 py-2">
+					<div class="rounded-full border border-border/70 bg-secondary/40 px-3 py-2">
 						Better Auth + Drizzle
 					</div>
-					<div class="rounded-full border border-white/10 bg-white/5 px-3 py-2">
+					<div class="rounded-full border border-border/70 bg-secondary/40 px-3 py-2">
 						{aiStatusText}
 					</div>
 				</div>
 			</div>
 
-			<div class="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
-				<p class="text-sm font-medium text-white">Next step</p>
-				<p class="mt-2 text-sm leading-6 text-slate-300">
+			<div class="rounded-[2rem] border border-primary/15 bg-primary/10 p-6 backdrop-blur-sm">
+				<p class="text-sm font-medium text-foreground">Next step</p>
+				<p class="mt-2 text-sm leading-6 text-muted-foreground">
 					Install the GitHub App, let the installation webhook provision settings, then configure
 					summaries and reminders from the dashboard.
 				</p>
@@ -64,23 +68,27 @@
 			</div>
 		</div>
 
-		<Separator class="my-8 bg-white/10" />
+		<Separator class="my-8 bg-border" />
 
 		<div class="grid gap-6 md:grid-cols-3">
 			<div>
-				<p class="text-sm font-medium text-white">Product</p>
-				<div class="mt-3 space-y-2 text-sm text-slate-300">
+				<p class="text-sm font-medium text-foreground">Product</p>
+				<div class="mt-3 space-y-2 text-sm text-muted-foreground">
 					{#each productLinks as link (link.href)}
-						<a href={link.href} class="block transition-colors hover:text-white">{link.label}</a>
+						<a href={link.href} class="block transition-colors hover:text-foreground"
+							>{link.label}</a
+						>
 					{/each}
 				</div>
 			</div>
 
 			<div>
-				<p class="text-sm font-medium text-white">Policies</p>
-				<div class="mt-3 space-y-2 text-sm text-slate-300">
+				<p class="text-sm font-medium text-foreground">Policies</p>
+				<div class="mt-3 space-y-2 text-sm text-muted-foreground">
 					{#each policyLinks as link (link.href)}
-						<a href={link.href} class="block transition-colors hover:text-white">{link.label}</a>
+						<a href={link.href} class="block transition-colors hover:text-foreground"
+							>{link.label}</a
+						>
 					{/each}
 				</div>
 			</div>

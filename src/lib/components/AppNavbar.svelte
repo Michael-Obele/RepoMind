@@ -7,7 +7,7 @@
 </script>
 
 <header
-	class="sticky top-0 z-20 border-b border-white/10 bg-background/60 px-4 py-3 backdrop-blur md:px-8"
+	class="sticky top-0 z-20 border-b border-border/70 bg-background/60 px-4 py-3 backdrop-blur md:px-8"
 >
 	<div class="flex items-center justify-between gap-4">
 		<div class="flex items-center gap-3">
@@ -21,7 +21,7 @@
 		</div>
 		<div class="hidden items-center gap-3 md:flex">
 			<div
-				class="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-muted-foreground"
+				class="flex items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3 py-2 text-sm text-muted-foreground"
 			>
 				<Sparkles class="size-4 text-primary" />
 				<span>{badgeText}</span>
