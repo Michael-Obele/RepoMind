@@ -8,6 +8,13 @@
       "when": 1779572581615,
       "tag": "0000_fantastic_madripoor",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1779717876839,
+      "tag": "0001_fearless_cassandra_nova",
+      "breakpoints": true
     }
   ]
 }
