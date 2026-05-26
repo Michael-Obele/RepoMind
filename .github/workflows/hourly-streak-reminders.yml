@@ -1,0 +1,20 @@
+name: Hourly streak reminders
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call streak reminder task
+        run: |
+          curl --fail --show-error --silent \
+            -X POST \
+            -H "Authorization: Bearer $INTERNAL_TASK_SECRET" \
+            "$APP_URL/api/tasks/evaluate-streak-reminders"
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+          INTERNAL_TASK_SECRET: ${{ secrets.INTERNAL_TASK_SECRET }}

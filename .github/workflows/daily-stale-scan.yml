@@ -1,0 +1,20 @@
+name: Daily stale issue scan
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call stale issue task
+        run: |
+          curl --fail --show-error --silent \
+            -X POST \
+            -H "Authorization: Bearer $INTERNAL_TASK_SECRET" \
+            "$APP_URL/api/tasks/evaluate-stale-issues"
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+          INTERNAL_TASK_SECRET: ${{ secrets.INTERNAL_TASK_SECRET }}
