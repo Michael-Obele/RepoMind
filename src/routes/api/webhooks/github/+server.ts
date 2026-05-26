@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { installations } from '$lib/server/db/schema';
+import { installations, webhookDeliveries } from '$lib/server/db/schema';
 import { createWebhookLog } from '$lib/server/audit';
 import { getGitHubWebhooks, hasGitHubAppConfig } from '$lib/server/github';
 import {
@@ -123,22 +123,49 @@ export const POST = async ({ request }) => {
 	}
 
 	const payload = JSON.parse(body) as GitHubWebhookPayload;
+	const insertedDelivery = await db
+		.insert(webhookDeliveries)
+		.values({
+			deliveryId: delivery,
+			eventType: eventName,
+			installationId: payload.installation?.id ? String(payload.installation.id) : null
+		})
+		.onConflictDoNothing()
+		.returning({ deliveryId: webhookDeliveries.deliveryId });
+
+	if (!insertedDelivery.length) {
+		return json({ accepted: true, delivery, duplicate: true }, { status: 202 });
+	}
 
 	queueMicrotask(() => {
 		void dispatchWebhook(eventName, payload).catch(async (error) => {
 			const installationId = payload.installation?.id;
 
 			if (installationId) {
-				await createWebhookLog({
-					installationId: String(installationId),
-					eventType: `${eventName}.${payload.action ?? 'received'}`,
-					action: 'handler_failed',
-					status: 'error',
-					repoFullName: payload.repository?.full_name ?? payload.account?.login ?? 'unknown',
-					resourceNumber: payload.issue?.number ?? payload.pull_request?.number ?? null,
-					resourceUrl: payload.issue?.html_url ?? payload.pull_request?.html_url ?? null,
-					errorMessage: error instanceof Error ? error.message : 'Unknown webhook error'
-				});
+				try {
+					await createWebhookLog({
+						installationId: String(installationId),
+						eventType: `${eventName}.${payload.action ?? 'received'}`,
+						action: 'handler_failed',
+						status: 'error',
+						repoFullName: payload.repository?.full_name ?? payload.account?.login ?? 'unknown',
+						resourceNumber: payload.issue?.number ?? payload.pull_request?.number ?? null,
+						resourceUrl: payload.issue?.html_url ?? payload.pull_request?.html_url ?? null,
+						errorMessage: error instanceof Error ? error.message : 'Unknown webhook error'
+					});
+				} catch (logError) {
+					console.error(
+						'[RepoMind] Failed to log webhook error:',
+						logError instanceof Error ? logError.message : logError,
+						'| Original error:',
+						error instanceof Error ? error.message : error
+					);
+				}
+			} else {
+				console.error(
+					'[RepoMind] Webhook handler failed without installation context:',
+					error instanceof Error ? error.message : error
+				);
 			}
 		});
 	});

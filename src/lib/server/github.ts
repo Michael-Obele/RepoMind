@@ -52,6 +52,19 @@ export async function getInstallationOctokit(installationId: string | number) {
 	return (await getGitHubApp().getInstallationOctokit(Number(installationId))) as Octokit;
 }
 
+export async function listInstallationRepositories(installationId: string | number) {
+	const octokit = await getInstallationOctokit(installationId);
+	const response = await octokit.rest.apps.listReposAccessibleToInstallation({
+		per_page: 100
+	});
+
+	return response.data.repositories.map((repository) => ({
+		id: repository.id,
+		name: repository.name,
+		fullName: repository.full_name
+	}));
+}
+
 export function getGitHubInstallUrl() {
 	return `https://github.com/apps/${env.PUBLIC_GITHUB_APP_SLUG ?? DEFAULT_GITHUB_APP_SLUG}/installations/new`;
 }

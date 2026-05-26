@@ -4,6 +4,7 @@ import { db } from '$lib/server/db';
 import { userSettings } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { requireUser } from '$lib/server/session';
+import { hasGitHubOAuthConfig } from '$lib/server/auth';
 
 const userSettingsSchema = v.object({
 	streakReminders: v.boolean(),
@@ -22,7 +23,8 @@ export const getAccountSettings = query(async () => {
 
 	return {
 		user: currentUser,
-		settings
+		settings,
+		hasGitHubOAuth: hasGitHubOAuthConfig()
 	};
 });
 

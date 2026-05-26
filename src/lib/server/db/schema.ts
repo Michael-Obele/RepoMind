@@ -1,5 +1,14 @@
 import { relations } from 'drizzle-orm';
-import { boolean, index, integer, jsonb, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import {
+	boolean,
+	index,
+	integer,
+	jsonb,
+	pgTable,
+	text,
+	timestamp,
+	uniqueIndex
+} from 'drizzle-orm/pg-core';
 import { account, session, user, verification } from './auth.schema';
 
 const defaultLabelSet = ['bug', 'feature', 'question', 'docs', 'security'] as const;
@@ -75,6 +84,42 @@ export const webhookLogs = pgTable(
 	]
 );
 
+export const issueAlertRules = pgTable(
+	'issue_alert_rule',
+	{
+		id: text('id').primaryKey(),
+		installationId: text('installation_id')
+			.notNull()
+			.references(() => installations.id, { onDelete: 'cascade' }),
+		repoFullName: text('repo_full_name').notNull(),
+		recipientEmails: jsonb('recipient_emails').$type<string[]>().notNull().default([]),
+		enabled: boolean('enabled').notNull().default(true),
+		createdAt: timestamp('created_at').defaultNow().notNull(),
+		updatedAt: timestamp('updated_at')
+			.defaultNow()
+			.$onUpdate(() => new Date())
+			.notNull()
+	},
+	(table) => [
+		index('issue_alert_rule_installation_idx').on(table.installationId),
+		uniqueIndex('issue_alert_rule_installation_repo_unique').on(
+			table.installationId,
+			table.repoFullName
+		)
+	]
+);
+
+export const webhookDeliveries = pgTable(
+	'webhook_delivery',
+	{
+		deliveryId: text('delivery_id').primaryKey(),
+		eventType: text('event_type').notNull(),
+		installationId: text('installation_id'),
+		createdAt: timestamp('created_at').defaultNow().notNull()
+	},
+	(table) => [index('webhook_delivery_installation_idx').on(table.installationId)]
+);
+
 export const userSettings = pgTable(
 	'user_settings',
 	{
@@ -99,12 +144,34 @@ export const userSettings = pgTable(
 	(table) => [index('user_settings_github_username_idx').on(table.githubUsername)]
 );
 
+export const userInstallations = pgTable(
+	'user_installation',
+	{
+		id: text('id').primaryKey(),
+		userId: text('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		installationId: text('installation_id')
+			.notNull()
+			.references(() => installations.id, { onDelete: 'cascade' }),
+		createdAt: timestamp('created_at').defaultNow().notNull()
+	},
+	(table) => [
+		index('user_installation_user_idx').on(table.userId),
+		index('user_installation_installation_idx').on(table.installationId),
+		uniqueIndex('user_installation_user_installation_unique').on(table.userId, table.installationId)
+	]
+);
+
 export const installationRelations = relations(installations, ({ one, many }) => ({
 	settings: one(appSettings, {
 		fields: [installations.id],
 		references: [appSettings.installationId]
 	}),
-	webhookLogs: many(webhookLogs)
+	webhookLogs: many(webhookLogs),
+	issueAlertRules: many(issueAlertRules),
+	webhookDeliveries: many(webhookDeliveries),
+	userInstallations: many(userInstallations)
 }));
 
 export const appSettingsRelations = relations(appSettings, ({ one }) => ({
@@ -121,10 +188,35 @@ export const webhookLogRelations = relations(webhookLogs, ({ one }) => ({
 	})
 }));
 
+export const issueAlertRuleRelations = relations(issueAlertRules, ({ one }) => ({
+	installation: one(installations, {
+		fields: [issueAlertRules.installationId],
+		references: [installations.id]
+	})
+}));
+
+export const webhookDeliveryRelations = relations(webhookDeliveries, ({ one }) => ({
+	installation: one(installations, {
+		fields: [webhookDeliveries.installationId],
+		references: [installations.id]
+	})
+}));
+
 export const userSettingsRelations = relations(userSettings, ({ one }) => ({
 	user: one(user, {
 		fields: [userSettings.userId],
 		references: [user.id]
+	})
+}));
+
+export const userInstallationRelations = relations(userInstallations, ({ one }) => ({
+	user: one(user, {
+		fields: [userInstallations.userId],
+		references: [user.id]
+	}),
+	installation: one(installations, {
+		fields: [userInstallations.installationId],
+		references: [installations.id]
 	})
 }));
 

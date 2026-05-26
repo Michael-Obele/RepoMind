@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Bot, ExternalLink } from '@lucide/svelte';
+	import { BrainCog, ExternalLink } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 
 	let { aiStatusText = 'AI ready' } = $props<{ aiStatusText?: string }>();
@@ -9,7 +9,7 @@
 	<div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 		<div class="flex items-center gap-3 text-sm text-zinc-300">
 			<div class="rounded-2xl bg-primary/12 p-2 text-primary">
-				<Bot class="size-4" />
+				<BrainCog class="size-4" />
 			</div>
 			<div>
 				<p class="font-medium text-white">RepoMind dashboard</p>

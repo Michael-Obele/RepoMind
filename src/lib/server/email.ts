@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 import { env } from '$env/dynamic/private';
+import { withRetry } from '$lib/server/retry';
 
 export interface StaleIssueDigestItem {
 	number: number;
@@ -24,6 +25,18 @@ interface StreakReminderOptions {
 	to: string;
 	githubUsername: string;
 	dateLabel: string;
+}
+
+interface IssueAlertOptions {
+	to: string[];
+	repoFullName: string;
+	issueNumber: number;
+	issueTitle: string;
+	issueBody?: string | null;
+	issueUrl: string;
+	authorLogin?: string | null;
+	labels: string[];
+	dashboardUrl: string;
 }
 
 const resend = env.RESEND_API_KEY ? new Resend(env.RESEND_API_KEY) : null;
@@ -94,17 +107,45 @@ function buildStreakHtml(options: StreakReminderOptions) {
 		</html>`;
 }
 
+function buildIssueAlertHtml(options: IssueAlertOptions) {
+	const excerpt = (options.issueBody ?? '').trim();
+	const trimmedExcerpt = excerpt.length > 280 ? `${excerpt.slice(0, 280)}...` : excerpt;
+
+	return `
+		<!doctype html>
+		<html>
+			<body style="font-family: Arial, sans-serif; background: #f5f7fb; color: #111827; margin: 0; padding: 24px;">
+				<div style="max-width: 640px; margin: 0 auto; background: white; border-radius: 16px; padding: 24px; border: 1px solid #e5e7eb;">
+					<p style="margin: 0; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: #6366f1;">RepoMind Alert</p>
+					<h1 style="margin: 12px 0 8px; font-size: 24px;">New issue opened in ${escapeHtml(options.repoFullName)}</h1>
+					<p style="margin: 0 0 20px; color: #4b5563;">Issue #${options.issueNumber} by ${escapeHtml(options.authorLogin ?? 'unknown')}.</p>
+					<div style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; background: #fafafa;">
+						<p style="margin: 0; font-size: 18px; font-weight: 600; color: #111827;">${escapeHtml(options.issueTitle)}</p>
+						<p style="margin: 12px 0 0; color: #4b5563;">${escapeHtml(trimmedExcerpt || 'No issue body provided.')}</p>
+						<p style="margin: 12px 0 0; font-size: 12px; color: #6b7280;">Labels: ${escapeHtml(options.labels.join(', ') || 'None yet')}</p>
+					</div>
+					<div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
+						<a href="${options.issueUrl}" style="display: inline-block; background: #111827; color: white; text-decoration: none; padding: 12px 18px; border-radius: 999px; font-weight: 600;">Open issue</a>
+						<a href="${options.dashboardUrl}" style="display: inline-block; color: #111827; text-decoration: none; padding: 12px 18px; border-radius: 999px; border: 1px solid #d1d5db; font-weight: 600;">Open RepoMind</a>
+					</div>
+				</div>
+			</body>
+		</html>`;
+}
+
 export async function sendStaleDigest(options: StaleDigestOptions) {
 	if (!resend) {
 		return { emailId: `mock-${crypto.randomUUID()}` };
 	}
 
-	const response = await resend.emails.send({
-		from: sender,
-		to: [options.to],
-		subject: `${options.issues.length} stale issue${options.issues.length === 1 ? '' : 's'} in ${options.repoFullName}`,
-		html: buildDigestHtml(options)
-	});
+	const response = await withRetry(() =>
+		resend.emails.send({
+			from: sender,
+			to: [options.to],
+			subject: `${options.issues.length} stale issue${options.issues.length === 1 ? '' : 's'} in ${options.repoFullName}`,
+			html: buildDigestHtml(options)
+		})
+	);
 
 	if (response.error) {
 		throw new Error(response.error.message);
@@ -118,12 +159,35 @@ export async function sendStreakReminder(options: StreakReminderOptions) {
 		return { emailId: `mock-${crypto.randomUUID()}` };
 	}
 
-	const response = await resend.emails.send({
-		from: sender,
-		to: [options.to],
-		subject: 'Your GitHub streak is at risk',
-		html: buildStreakHtml(options)
-	});
+	const response = await withRetry(() =>
+		resend.emails.send({
+			from: sender,
+			to: [options.to],
+			subject: 'Your GitHub streak is at risk',
+			html: buildStreakHtml(options)
+		})
+	);
+
+	if (response.error) {
+		throw new Error(response.error.message);
+	}
+
+	return { emailId: response.data?.id ?? crypto.randomUUID() };
+}
+
+export async function sendIssueAlert(options: IssueAlertOptions) {
+	if (!resend) {
+		return { emailId: `mock-${crypto.randomUUID()}` };
+	}
+
+	const response = await withRetry(() =>
+		resend.emails.send({
+			from: sender,
+			to: options.to,
+			subject: `New issue in ${options.repoFullName}: #${options.issueNumber} ${options.issueTitle}`,
+			html: buildIssueAlertHtml(options)
+		})
+	);
 
 	if (response.error) {
 		throw new Error(response.error.message);

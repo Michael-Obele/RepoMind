@@ -1,13 +1,33 @@
 <script lang="ts">
-	import { Eye, EyeOff, Lock, Sparkles, UserRound } from '@lucide/svelte';
+	import { Eye, EyeOff, GitBranch, Lock, Sparkles, UserRound } from '@lucide/svelte';
+	import { authClient } from '$lib/auth-client';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { signIn, signUp } from '$lib/remote';
 
+	let { data } = $props<{ data: { hasGitHubOAuth: boolean } }>();
 	let showSignInPassword = $state(false);
 	let showSignUpPassword = $state(false);
+	let socialSignInState = $state<'idle' | 'loading' | 'error'>('idle');
+	let socialSignInMessage = $state('');
+
+	async function handleGitHubSignIn() {
+		socialSignInState = 'loading';
+		socialSignInMessage = '';
+
+		try {
+			await authClient.signIn.social({
+				provider: 'github',
+				callbackURL: '/dashboard'
+			});
+		} catch (error) {
+			socialSignInState = 'error';
+			socialSignInMessage =
+				error instanceof Error ? error.message : 'Unable to start GitHub sign-in.';
+		}
+	}
 </script>
 
 <section class="min-h-[calc(100vh-4rem)] px-4 py-12 md:px-8">
@@ -24,8 +44,12 @@
 				Sign in to manage automations, reminders, and your GitHub installations.
 			</h1>
 			<p class="mt-4 max-w-xl text-base leading-7 text-muted-foreground">
-				Username sign-in is available now, and GitHub OAuth can be enabled later by adding the
-				provider credentials.
+				{#if data.hasGitHubOAuth}
+					Username sign-in and GitHub OAuth are both available for this workspace.
+				{:else}
+					Username sign-in is available now, and GitHub OAuth will appear here when the provider
+					credentials are loaded by the app.
+				{/if}
 			</p>
 			<div
 				class="mt-6 flex items-start gap-3 rounded-3xl border border-border/70 bg-secondary/45 p-4 text-sm leading-6 text-muted-foreground"
@@ -41,6 +65,28 @@
 					<CardTitle>Sign in</CardTitle>
 				</CardHeader>
 				<CardContent>
+					{#if data.hasGitHubOAuth}
+						<div class="mb-4 space-y-3">
+							<Button
+								type="button"
+								variant="outline"
+								class="w-full"
+								onclick={handleGitHubSignIn}
+								disabled={socialSignInState === 'loading'}
+							>
+								<GitBranch class="size-4" />
+								{socialSignInState === 'loading' ? 'Redirecting to GitHub...' : 'Continue with GitHub'}
+							</Button>
+							{#if socialSignInMessage}
+								<p class="text-sm text-rose-600">{socialSignInMessage}</p>
+							{/if}
+							<div class="flex items-center gap-3 text-xs uppercase tracking-[0.24em] text-muted-foreground">
+								<div class="h-px flex-1 bg-border"></div>
+								<span>Or use username</span>
+								<div class="h-px flex-1 bg-border"></div>
+							</div>
+						</div>
+					{/if}
 					<form {...signIn} class="space-y-4">
 						<div class="space-y-2">
 							<Label for="signin-username">Username</Label>
@@ -184,10 +230,15 @@
 				class="rounded-[1.75rem] border border-border/70 bg-card/60 p-5 shadow-lg shadow-black/20"
 			>
 				<p class="flex items-center gap-2 font-medium text-foreground">
-					<UserRound class="size-4 text-primary" /> Username-first auth
+					<UserRound class="size-4 text-primary" />
+					{data.hasGitHubOAuth ? 'Multiple sign-in options' : 'Username-first auth'}
 				</p>
 				<p class="mt-2 text-sm leading-6 text-muted-foreground">
-					Create an account with your email, then use your username to sign in across the dashboard.
+					{#if data.hasGitHubOAuth}
+						Use GitHub to attach your social account directly, or keep using username sign-in.
+					{:else}
+						Create an account with your email, then use your username to sign in across the dashboard.
+					{/if}
 				</p>
 			</div>
 		</div>

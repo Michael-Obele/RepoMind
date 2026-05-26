@@ -53,7 +53,10 @@ export async function markInstallationSuspended(installationId: string, suspende
 }
 
 export async function deleteInstallation(installationId: string) {
-	await db.delete(installations).where(eq(installations.id, installationId));
+	await db
+		.update(installations)
+		.set({ suspendedAt: new Date(), updatedAt: new Date() })
+		.where(eq(installations.id, installationId));
 }
 
 export async function updateInstallationRepositoryCount(

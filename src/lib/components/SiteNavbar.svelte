@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ArrowRight, BookOpen, Bot, Mail, Menu, Sparkles } from '@lucide/svelte';
+	import { ArrowRight, BookOpen, BrainCog, Mail, Menu, Sparkles } from '@lucide/svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
 	import * as Sheet from '$lib/components/ui/sheet/index.js';
@@ -24,7 +24,7 @@
 			<div
 				class="flex size-11 items-center justify-center rounded-2xl border border-primary/20 bg-primary/12 text-primary shadow-lg shadow-primary/10"
 			>
-				<Bot class="size-5" />
+				<BrainCog class="size-5" />
 			</div>
 			<div class="min-w-0">
 				<p class="text-xs tracking-[0.26em] text-primary uppercase">RepoMind</p>
@@ -82,7 +82,7 @@
 							<div
 								class="flex size-10 items-center justify-center rounded-2xl border border-primary/20 bg-primary/12 text-primary"
 							>
-								<Bot class="size-5" />
+								<BrainCog class="size-5" />
 							</div>
 							RepoMind
 						</Sheet.Title>

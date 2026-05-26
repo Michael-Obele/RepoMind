@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ArrowRight, BookOpen, Bot } from '@lucide/svelte';
+	import { ArrowRight, BookOpen, BrainCog } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
 
@@ -27,7 +27,7 @@
 					<div
 						class="flex size-11 items-center justify-center rounded-2xl border border-primary/20 bg-primary/12 text-primary"
 					>
-						<Bot class="size-5" />
+						<BrainCog class="size-5" />
 					</div>
 					<div>
 						<p class="text-xs tracking-[0.26em] text-primary uppercase">RepoMind</p>

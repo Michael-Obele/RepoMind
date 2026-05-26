@@ -16,6 +16,10 @@ const socialProviders =
 			}
 		: undefined;
 
+export function hasGitHubOAuthConfig() {
+	return Boolean(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET);
+}
+
 export const auth = betterAuth({
 	appName: 'RepoMind',
 	baseURL: env.BETTER_AUTH_URL ?? env.ORIGIN ?? 'http://localhost:5173',

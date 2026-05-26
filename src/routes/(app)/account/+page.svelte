@@ -105,8 +105,12 @@
 			</CardHeader>
 			<CardContent class="space-y-4 text-sm text-zinc-300">
 				<p>
-					Signed in as {account.user.email}. Username sign-in is enabled until GitHub OAuth
-					credentials are available.
+					Signed in as {account.user.email}.
+					{#if account.hasGitHubOAuth}
+						GitHub OAuth is configured for this workspace, so you can use either sign-in path.
+					{:else}
+						Username sign-in is enabled until GitHub OAuth credentials are available.
+					{/if}
 				</p>
 				<form {...signOut}>
 					<Button type="submit" variant="outline">Sign out</Button>

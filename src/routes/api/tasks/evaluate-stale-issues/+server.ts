@@ -16,7 +16,8 @@ export const POST = async ({ request }) => {
 			installationId: installations.id,
 			githubLogin: installations.githubLogin,
 			maintainerEmail: appSettings.maintainerEmail,
-			staleDaysThreshold: appSettings.staleDaysThreshold
+			staleDaysThreshold: appSettings.staleDaysThreshold,
+			emailDigestHour: appSettings.emailDigestHour
 		})
 		.from(appSettings)
 		.innerJoin(installations, eq(installations.id, appSettings.installationId))
@@ -30,6 +31,11 @@ export const POST = async ({ request }) => {
 	};
 
 	for (const row of rows) {
+		if (row.emailDigestHour !== new Date().getUTCHours()) {
+			results.skipped += 1;
+			continue;
+		}
+
 		if (!row.maintainerEmail) {
 			results.skipped += 1;
 			continue;
