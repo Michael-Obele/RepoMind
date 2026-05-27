@@ -2,7 +2,6 @@ import { chat, type AnyTextAdapter } from '@tanstack/ai';
 import { createGeminiChat } from '@tanstack/ai-gemini';
 import { createOpenaiChat, createOpenaiChatCompletions } from '@tanstack/ai-openai';
 import { env } from '$env/dynamic/private';
-import { withRetry } from '$lib/server/retry';
 
 export type AiProviderId = 'deepseek' | 'openai' | 'gemini';
 
@@ -271,14 +270,12 @@ async function generateJsonText<T>(providerId: AiProviderId, system: string, pro
 	}
 
 	try {
-		const result = await withRetry(() =>
-			chat({
-				adapter,
-				messages: [{ role: 'user', content: prompt }],
-				systemPrompts: [system],
-				stream: false
-			})
-		);
+		const result = await chat({
+			adapter,
+			messages: [{ role: 'user', content: prompt }],
+			systemPrompts: [system],
+			stream: false
+		});
 
 		return {
 			parsed: JSON.parse(stripCodeFence(result)) as T,

@@ -159,7 +159,10 @@ export const userInstallations = pgTable(
 	(table) => [
 		index('user_installation_user_idx').on(table.userId),
 		index('user_installation_installation_idx').on(table.installationId),
-		uniqueIndex('user_installation_user_installation_unique').on(table.userId, table.installationId)
+		uniqueIndex('user_installation_user_installation_unique').on(
+			table.userId,
+			table.installationId
+		)
 	]
 );
 

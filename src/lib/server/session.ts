@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { getRequestEvent } from '$app/server';
-import { and, eq, or, sql } from 'drizzle-orm';
+import { eq, or, sql } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import { account, installations, userInstallations, userSettings } from '$lib/server/db/schema';
 
@@ -44,7 +44,9 @@ export async function autoLinkPersonalInstallations(userId: string, username?: s
 				.filter((value): value is string => Boolean(value))
 		)
 	);
-	const normalizedLoginCandidates = Array.from(new Set(loginCandidates.map((value) => value.toLowerCase())));
+	const normalizedLoginCandidates = Array.from(
+		new Set(loginCandidates.map((value) => value.toLowerCase()))
+	);
 	const githubAccountId = githubAccount?.accountId ? Number(githubAccount.accountId) : Number.NaN;
 
 	if (!normalizedLoginCandidates.length && !Number.isSafeInteger(githubAccountId)) {
